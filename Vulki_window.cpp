@@ -1,4 +1,6 @@
-#include "Vulki_window.h"
+#include "vulki_window.h"
+
+#include <stdexcept>
 
 namespace VULKI
 {
@@ -19,6 +21,12 @@ namespace VULKI
 
 		// forth(full screen) fifth(opengl context)
 		window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+	}
+
+	void VulkiWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) {
+		if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create window surface");
+		}
 	}
 
 }

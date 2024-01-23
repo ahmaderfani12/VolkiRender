@@ -21,7 +21,13 @@
     <ClCompile Include="first_app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulki_window.cpp">
+    <ClCompile Include="vulki_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulki_pipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulki_device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +35,13 @@
     <ClInclude Include="first_app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulki_window.h">
+    <ClInclude Include="vulki_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulki_pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulki_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

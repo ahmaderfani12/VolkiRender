@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Vulki_window.h"
+#include "vulki_pipeline.h"
+#include "vulki_device.hpp"
 
 namespace VULKI {
 
@@ -13,5 +15,10 @@ namespace VULKI {
 
 	private:
 		VulkiWindow vulkiWindow{ WIDTH, HEIGHT, "Hello Vulkan!!" };
+		VulkiDevice vulkiDevice{ vulkiWindow };
+		VulkiPipeline lvePipeline{ vulkiDevice,
+			"shaders/simple_shader.vert.spv",
+			"shaders/simple_shader.frag.spv",
+			VulkiPipeline::defaultPipeLineConfigInfo(WIDTH,HEIGHT)};
 	};
 }  // namespace lve

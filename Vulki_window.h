@@ -17,6 +17,9 @@ namespace VULKI
 		VulkiWindow &operator=(const VulkiWindow &) = delete;
 
 		bool shouldClose() { return glfwWindowShouldClose(window); }
+
+		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+
 	private:
 		void init();
 
