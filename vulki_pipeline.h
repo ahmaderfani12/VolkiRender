@@ -9,7 +9,6 @@ namespace VULKI {
 	struct PipelineConfigInfo {
 		VkViewport viewport;
 		VkRect2D scissor;
-		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 		VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -33,7 +32,9 @@ namespace VULKI {
 		VulkiPipeline(const VulkiPipeline&) = delete;
 		void operator=(const VulkiPipeline&) = delete;
 
-		static PipelineConfigInfo defaultPipeLineConfigInfo(uint32_t width, uint32_t height);
+		void bind(VkCommandBuffer comamndBuffer);
+
+		static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
 	private:
 		static std::vector<char> readFile(const std::string& filepath);
