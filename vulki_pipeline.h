@@ -6,6 +6,7 @@
 
 namespace VULKI {
 
+	// How different stages of pipeline works
 	struct PipelineConfigInfo {
 		VkViewport viewport;
 		VkRect2D scissor;
@@ -19,6 +20,7 @@ namespace VULKI {
 		VkRenderPass renderPass = nullptr;
 		uint32_t subpass = 0;
 	};
+
 
 	class VulkiPipeline {
 	public:

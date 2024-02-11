@@ -16,6 +16,7 @@ namespace VULKI {
 	}
 
 	FirstApp::FirstApp() {
+		loadModels();
 		createPipelineLayout();
 		createPipeline();
 		createCommandBuffers();
@@ -25,6 +26,10 @@ namespace VULKI {
 		vkDestroyPipelineLayout(vulkiDevice.device(), pipelineLayout, nullptr); 
 	}
 
+	void FirstApp::loadModels() {
+		std::vector<VulkiModel::Vertex> vertices{ {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}} };
+		vulkiModel = std::make_unique<VulkiModel>(vulkiDevice, vertices);
+	}
 
 	void FirstApp::createPipelineLayout() {
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -91,7 +96,8 @@ namespace VULKI {
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			vulkiPipeline->bind(commandBuffers[i]);
-			vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+			vulkiModel->bind(commandBuffers[i]);
+			vulkiModel->draw(commandBuffers[i]);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

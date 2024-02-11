@@ -4,6 +4,7 @@
 #include "vulki_pipeline.h"
 #include "vulki_device.hpp"
 #include "vulki_swap_chain.hpp"
+#include "vulki_model.h"
 
 #include<memory>
 #include<vector>
@@ -24,6 +25,7 @@ namespace VULKI {
 		void run();
 
 	private:
+		void loadModels();
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
@@ -35,5 +37,6 @@ namespace VULKI {
 		std::unique_ptr<VulkiPipeline> vulkiPipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;
+		std::unique_ptr<VulkiModel> vulkiModel;
 	};
 }  // namespace lve
