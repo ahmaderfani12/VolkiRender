@@ -27,7 +27,11 @@ namespace VULKI {
 	}
 
 	void FirstApp::loadModels() {
-		std::vector<VulkiModel::Vertex> vertices{ {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}} };
+		std::vector<VulkiModel::Vertex> vertices{
+			{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+			{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}} };		
+
 		vulkiModel = std::make_unique<VulkiModel>(vulkiDevice, vertices);
 	}
 
@@ -45,8 +49,11 @@ namespace VULKI {
 	}
 
 	void FirstApp::createPipeline() {
-		auto pipelineConfig =
-			VulkiPipeline::defaultPipelineConfigInfo(vulkiSwapChain.width(), vulkiSwapChain.height());
+		PipelineConfigInfo pipelineConfig{};
+		VulkiPipeline::defaultPipelineConfigInfo(
+			pipelineConfig,
+			vulkiSwapChain.width(),
+			vulkiSwapChain.height());
 		pipelineConfig.renderPass = vulkiSwapChain.getRenderPass();
 		pipelineConfig.pipelineLayout = pipelineLayout;
 		vulkiPipeline = std::make_unique<VulkiPipeline>(
