@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 
 // std lib headers
+#include<memory>
 #include <string>
 #include <vector>
 
@@ -16,10 +17,11 @@ class VulkiSwapChain {
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
   VulkiSwapChain(VulkiDevice &deviceRef, VkExtent2D windowExtent);
+  VulkiSwapChain(VulkiDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<VulkiSwapChain> previous);
   ~VulkiSwapChain();
 
   VulkiSwapChain(const VulkiSwapChain &) = delete;
-  void operator=(const VulkiSwapChain &) = delete;
+  VulkiSwapChain& operator=(const VulkiSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }
@@ -39,12 +41,13 @@ class VulkiSwapChain {
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
  private:
-  void createSwapChain();
-  void createImageViews();
-  void createDepthResources();
-  void createRenderPass();
-  void createFramebuffers();
-  void createSyncObjects();
+     void init();
+      void createSwapChain();
+      void createImageViews();
+      void createDepthResources();
+      void createRenderPass();
+      void createFramebuffers();
+      void createSyncObjects();
 
   // Helper functions
   VkSurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -69,6 +72,7 @@ class VulkiSwapChain {
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;
+  std::shared_ptr<VulkiSwapChain> oldSwapChain;
 
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;

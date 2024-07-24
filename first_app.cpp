@@ -18,7 +18,8 @@ namespace VULKI {
 	FirstApp::FirstApp() {
 		loadModels();
 		createPipelineLayout();
-		createPipeline();
+		recreateSwapChain();
+			//createPipeline();
 		createCommandBuffers();
 	}
 
@@ -49,12 +50,14 @@ namespace VULKI {
 	}
 
 	void FirstApp::createPipeline() {
+		assert(vulkiSwapChain != nullptr && "Cannot create pipeline before swap chain");
+		assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
 		PipelineConfigInfo pipelineConfig{};
 		VulkiPipeline::defaultPipelineConfigInfo(
-			pipelineConfig,
-			vulkiSwapChain.width(),
-			vulkiSwapChain.height());
-		pipelineConfig.renderPass = vulkiSwapChain.getRenderPass();
+			pipelineConfig);
+
+		pipelineConfig.renderPass = vulkiSwapChain->getRenderPass();
 		pipelineConfig.pipelineLayout = pipelineLayout;
 		vulkiPipeline = std::make_unique<VulkiPipeline>(
 			vulkiDevice,
@@ -63,9 +66,34 @@ namespace VULKI {
 			pipelineConfig);
 	}
 
+	void FirstApp::recreateSwapChain() {
+		auto extend = vulkiWindow.getExtent();
+		while (extend.width == 0 || extend.height == 0) {
+			extend = vulkiWindow.getExtent();
+			glfwWaitEvents();
+		}
+		// wain until the current swapchain is no longer beign used before create the new swapchain
+		vkDeviceWaitIdle(vulkiDevice.device());
+
+		if (vulkiSwapChain == nullptr) {
+			vulkiSwapChain = std::make_unique<VulkiSwapChain>(vulkiDevice, extend);
+		}
+		else
+		{
+			vulkiSwapChain = std::make_unique<VulkiSwapChain>(vulkiDevice, extend, std::move(vulkiSwapChain));
+			if (vulkiSwapChain->imageCount() != commandBuffers.size()) {
+				freeCommandBuffers();
+				createCommandBuffers();
+			}
+		}
+
+		createPipeline();
+	}
+
 	void FirstApp::createCommandBuffers() {
 	
-		commandBuffers.resize(vulkiSwapChain.imageCount());
+		// 2 or 3
+		commandBuffers.resize(vulkiSwapChain->imageCount());
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -77,51 +105,83 @@ namespace VULKI {
 			VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate command buffers!");
 		}
+	}
 
-		for (int i = 0; i < commandBuffers.size(); i++) {
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	void FirstApp::freeCommandBuffers() {
+		vkFreeCommandBuffers(
+			vulkiDevice.device(),
+			vulkiDevice.getCommandPool(),
+			static_cast<uint32_t>(commandBuffers.size()),
+			commandBuffers.data());
+		commandBuffers.clear();
+	}
 
-			if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-				throw std::runtime_error("failed to begin recording command buffer!");
-			}
+	void FirstApp::recordCommandBuffer(int imageIndex) {
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = vulkiSwapChain.getRenderPass();
-			renderPassInfo.framebuffer = vulkiSwapChain.getFrameBuffer(i);
-
-			renderPassInfo.renderArea.offset = { 0,0 };
-			renderPassInfo.renderArea.extent = vulkiSwapChain.getSwapChainExtent();
-
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0].color = { 0.1f,0.1f,0.1f,1.0f };
-			clearValues[1].depthStencil = { 0.1f,0 };
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
-
-			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			vulkiPipeline->bind(commandBuffers[i]);
-			vulkiModel->bind(commandBuffers[i]);
-			vulkiModel->draw(commandBuffers[i]);
-
-			vkCmdEndRenderPass(commandBuffers[i]);
-			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-				throw std::runtime_error("failed to record command buffer!");
-			}
-
+		if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer!");
 		}
+
+		// A command
+		VkRenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = vulkiSwapChain->getRenderPass();
+		renderPassInfo.framebuffer = vulkiSwapChain->getFrameBuffer(imageIndex);
+
+		renderPassInfo.renderArea.offset = { 0,0 };
+		renderPassInfo.renderArea.extent = vulkiSwapChain->getSwapChainExtent();
+
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = { 0.1f,0.1f,0.1f,1.0f };
+		clearValues[1].depthStencil = { 0.1f,0 };
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
+
+		vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = static_cast<float>(vulkiSwapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<float>(vulkiSwapChain->getSwapChainExtent().height);
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		VkRect2D scissor{ {0, 0}, vulkiSwapChain->getSwapChainExtent() };
+		vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+		vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+
+		vulkiPipeline->bind(commandBuffers[imageIndex]);
+		vulkiModel->bind(commandBuffers[imageIndex]);
+		vulkiModel->draw(commandBuffers[imageIndex]);
+
+		vkCmdEndRenderPass(commandBuffers[imageIndex]);
+		if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record command buffer!");
+		}
+
 	}
 	void FirstApp::drawFrames() {
 
 		uint32_t imageIndex;
-		auto result = vulkiSwapChain.acquireNextImage(&imageIndex);
+		auto result = vulkiSwapChain->acquireNextImage(&imageIndex);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+			recreateSwapChain();
+			return;
+		}
 		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 			throw std::runtime_error("failed to acquire swap chain image!");
 		}
+		recordCommandBuffer(imageIndex);
+		result = vulkiSwapChain->submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
 
-		result = vulkiSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || vulkiWindow.wasWindowResized()) {
+			vulkiWindow.resetWindowResizedFlag();
+			recreateSwapChain();
+			return;
+		}
 
 		if (result != VK_SUCCESS) {
 			throw std::runtime_error("failed to present swap chain image!");

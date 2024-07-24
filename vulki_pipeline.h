@@ -8,8 +8,7 @@ namespace VULKI {
 
 	// How different stages of pipeline works
 	struct PipelineConfigInfo {
-		VkViewport viewport;
-		VkRect2D scissor;
+
 		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -17,6 +16,8 @@ namespace VULKI {
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+		std::vector<VkDynamicState> dynamicStateEnables;
+		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineLayout pipelineLayout = nullptr;
 		VkRenderPass renderPass = nullptr;
 		uint32_t subpass = 0;
@@ -33,12 +34,11 @@ namespace VULKI {
 
 		~VulkiPipeline();
 		VulkiPipeline(const VulkiPipeline&) = delete;
-		void operator=(const VulkiPipeline&) = delete;
+		VulkiPipeline& operator=(const VulkiPipeline&) = delete;
 
 		void bind(VkCommandBuffer comamndBuffer);
 
-		static void defaultPipelineConfigInfo(
-			PipelineConfigInfo& configInfo, uint32_t width, uint32_t height);
+		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
 	private:
 		static std::vector<char> readFile(const std::string& filepath);

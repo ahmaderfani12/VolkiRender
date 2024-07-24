@@ -18,7 +18,9 @@ namespace VULKI {
     void VulkiModel::createVertexBuffers(const std::vector<Vertex>& vertices) {
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
+
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        // Its a helper in Device class
         vulkiDevice.createBuffer(
             bufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -27,7 +29,10 @@ namespace VULKI {
             vertexBufferMemory);
 
         void* data;
+        // Creates a region of host mem mapped to device mem, data points to the gpu mem
         vkMapMemory(vulkiDevice.device(), vertexBufferMemory, 0, bufferSize, 0, &data);
+        // Takes the vertices data and copis it into the host mapped mem, it updates the device automatically
+        // because of "COHERENT_BIT" otherwise we should have used Flush()
         memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
         vkUnmapMemory(vulkiDevice.device(), vertexBufferMemory);
     }

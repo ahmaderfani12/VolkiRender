@@ -35,7 +35,7 @@ class VulkiDevice {
 
   // Not copyable or movable
   VulkiDevice(const VulkiDevice &) = delete;
-  void operator=(const VulkiDevice &) = delete;
+  VulkiDevice& operator=(const VulkiDevice &) = delete;
   VulkiDevice(VulkiDevice &&) = delete;
   VulkiDevice &operator=(VulkiDevice &&) = delete;
 

@@ -29,11 +29,15 @@ namespace VULKI {
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
+		void freeCommandBuffers();
 		void drawFrames();
+		// for resizing window
+		void recreateSwapChain();
+		void recordCommandBuffer(int imageIndex);
 
 		VulkiWindow vulkiWindow{ WIDTH, HEIGHT, "Hello Vulkan!!" };
 		VulkiDevice vulkiDevice{ vulkiWindow };
-		VulkiSwapChain vulkiSwapChain{ vulkiDevice, vulkiWindow.getExtent() };
+		std::unique_ptr<VulkiSwapChain> vulkiSwapChain;
 		std::unique_ptr<VulkiPipeline> vulkiPipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;

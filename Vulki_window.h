@@ -18,14 +18,19 @@ namespace VULKI
 
 		bool shouldClose() { return glfwWindowShouldClose(window); }
 		VkExtent2D getExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; };
+		bool wasWindowResized() { return frameBufferResized; }
+		void resetWindowResizedFlag() { frameBufferResized = false; }
 
+		// Get called in device
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
 	private:
+		static void framebufferResizedCallback(GLFWwindow* window, int width, int height);
 		void init();
 
-		const int width;
-		const int height;
+		int width;
+		int height;
+		bool frameBufferResized = false;
 
 		std::string name;
 		GLFWwindow *window;
