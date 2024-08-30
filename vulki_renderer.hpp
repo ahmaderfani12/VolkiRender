@@ -20,6 +20,7 @@ namespace VULKI {
 		VulkiRenderer& operator=(const VulkiRenderer&) = delete;
 
 		VkRenderPass getSwapChainRenderPass() const { return vulkiSwapChain->getRenderPass(); };
+		float getAspectRatio() const { return vulkiSwapChain->extentAspectRatio(); }
 		bool isFrameInProgress() const { return isFrameStarted; }
 
 		VkCommandBuffer getCurrentCommandBuffer() const { 

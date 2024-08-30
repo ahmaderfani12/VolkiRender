@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vulki_window.h"
-
+#include "vulki_window.h"
+#include "vulki_camera.hpp"
 #include "vulki_device.hpp"
 #include "vulki_swap_chain.hpp"
 #include "vulki_game_object.hpp"

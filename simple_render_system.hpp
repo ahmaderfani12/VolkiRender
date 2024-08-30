@@ -5,7 +5,7 @@
 #include "vulki_device.hpp"
 #include "vulki_swap_chain.hpp"
 #include "vulki_game_object.hpp"
-
+#include "vulki_camera.hpp"
 
 #include<memory>
 #include<vector>
@@ -22,7 +22,7 @@ namespace VULKI {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkiGameObject> &gameObjects);
+		void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<VulkiGameObject> &gameObjects, const VulkiCamera &camera);
 	private:
 
 		void createPipelineLayout();

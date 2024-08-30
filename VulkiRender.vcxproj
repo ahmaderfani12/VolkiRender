@@ -136,6 +136,7 @@
     <ClCompile Include="first_app.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SimpleRenderSystem.cpp" />
+    <ClCompile Include="vulki_camera.cpp" />
     <ClCompile Include="vulki_device.cpp" />
     <ClCompile Include="vulki_model.cpp" />
     <ClCompile Include="vulki_pipeline.cpp" />
@@ -146,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="first_app.h" />
     <ClInclude Include="simple_render_system.hpp" />
+    <ClInclude Include="vulki_camera.hpp" />
     <ClInclude Include="vulki_device.hpp" />
     <ClInclude Include="vulki_game_object.hpp" />
     <ClInclude Include="vulki_model.h" />
