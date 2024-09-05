@@ -1,5 +1,7 @@
 #include "first_app.h"
 #include "simple_render_system.hpp"
+#include "input_manager.hpp"
+
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -8,7 +10,7 @@
 #include <glm/gtc/constants.hpp>
 #include <stdexcept>
 #include <array>
-
+#include<chrono>
 
 namespace VULKI {
 
@@ -18,12 +20,23 @@ namespace VULKI {
         VulkiCamera camera{};
         camera.setViewTarget(glm::vec3(0.f,0.f,2.f), glm::vec3(0.0f));
 
+        auto viewObject = VulkiGameObject::createGameObject();
+        KeyboardMovementController cameraController{};
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+
 		while (!vulkiWindow.shouldClose()) {
 			// track window events
 			glfwPollEvents();
 
+            auto newTime = std::chrono::high_resolution_clock::now();
+            float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            currentTime = newTime;
+
+            cameraController.moveInPlaneXZ(vulkiWindow.getGLFWwindow(), frameTime, viewObject);
+            camera.setViewYXZ(viewObject.transform.translation, viewObject.transform.rotation);
+
             float aspect = vulkiRenderer.getAspectRatio();
-            //camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
             camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
 			if (auto commandBuffer = vulkiRenderer.beginFrame()) {

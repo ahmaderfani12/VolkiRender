@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="first_app.cpp" />
+    <ClCompile Include="input_manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SimpleRenderSystem.cpp" />
     <ClCompile Include="vulki_camera.cpp" />
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="first_app.h" />
+    <ClInclude Include="input_manager.hpp" />
     <ClInclude Include="simple_render_system.hpp" />
     <ClInclude Include="vulki_camera.hpp" />
     <ClInclude Include="vulki_device.hpp" />

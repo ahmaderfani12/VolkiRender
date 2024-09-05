@@ -72,9 +72,6 @@ namespace VULKI {
 
 		auto projectionView = camera.getProjection() * camera.getView();
 		for (auto& obj : gameObjects) {
-			obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.001f, glm::two_pi<float>());
-			obj.transform.rotation.x = 20.f;
-
 
 			SimplePushConstantData push{};
 			push.color = obj.color;
