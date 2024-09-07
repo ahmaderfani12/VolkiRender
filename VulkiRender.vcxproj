@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Libraries\glfw-3.3.9.bin.WIN64\include;$(ProjectDir)Libraries\glm;$(VULKAN_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Libraries\glfw-3.3.9.bin.WIN64\include;$(ProjectDir)Libraries\glm;$(ProjectDir)Libraries\tinyobjectloader;$(VULKAN_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Libraries\glfw-3.3.9.bin.WIN64\include;$(ProjectDir)Libraries\glm;$(VULKAN_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Libraries\glfw-3.3.9.bin.WIN64\include;$(ProjectDir)Libraries\glm;$(ProjectDir)Libraries\tinyobjectloader;$(VULKAN_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -157,6 +157,7 @@
     <ClInclude Include="vulki_model.h" />
     <ClInclude Include="vulki_pipeline.h" />
     <ClInclude Include="vulki_swap_chain.hpp" />
+    <ClInclude Include="vulki_utils.hpp" />
     <ClInclude Include="vulki_window.h" />
     <ClInclude Include="vulki_renderer.hpp" />
   </ItemGroup>
