@@ -141,6 +141,7 @@
     <ClCompile Include="SimpleRenderSystem.cpp" />
     <ClCompile Include="vulki_camera.cpp" />
     <ClCompile Include="vulki_device.cpp" />
+    <ClCompile Include="vulki_game_object.cpp" />
     <ClCompile Include="vulki_model.cpp" />
     <ClCompile Include="vulki_pipeline.cpp" />
     <ClCompile Include="vulki_renderer.cpp" />
