@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulki_device.hpp"
+#include "vulki_buffer.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -52,13 +53,11 @@ namespace VULKI {
 
         VulkiDevice& vulkiDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<VulkiBuffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<VulkiBuffer> indexBuffer;
         uint32_t indexCount;
     };
 }

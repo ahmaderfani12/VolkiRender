@@ -30,15 +30,7 @@ namespace VULKI {
         createIndexBuffers(builder.indices);
     }
 
-    VulkiModel::~VulkiModel() {
-        vkDestroyBuffer(vulkiDevice.device(), vertexBuffer, nullptr);
-        vkFreeMemory(vulkiDevice.device(), vertexBufferMemory, nullptr);
-
-        if (hasIndexBuffer) {
-            vkDestroyBuffer(vulkiDevice.device(), indexBuffer, nullptr);
-            vkFreeMemory(vulkiDevice.device(), indexBufferMemory, nullptr);
-        }
-    }
+    VulkiModel::~VulkiModel() {}
 
     std::unique_ptr<VulkiModel> VulkiModel::createModelFromFile(VulkiDevice& device, const std::string& filePath) {
     
@@ -53,78 +45,61 @@ namespace VULKI {
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
 
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        uint32_t vertexSize = sizeof(vertices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        // Its a helper in Device class
-        vulkiDevice.createBuffer(
-            bufferSize,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VulkiBuffer stagingBuffer{
+            vulkiDevice,
+            vertexSize,
+            vertexCount,
+                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory);
+        };
 
-        void* data;
-        // Creates a region of host mem mapped to device mem, data points to the gpu mem
-        vkMapMemory(vulkiDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        // Takes the vertices data and copis it into the host mapped mem, it updates the device automatically
-        // because of "COHERENT_BIT" otherwise we should have used Flush()
-        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(vulkiDevice.device(), stagingBufferMemory);
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void*)vertices.data());
 
-
-        vulkiDevice.createBuffer(
-            bufferSize,
+        vertexBuffer = std::make_unique<VulkiBuffer>(
+            vulkiDevice,
+            vertexSize,
+            vertexCount,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            vertexBuffer,
-            vertexBufferMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        vulkiDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
 
-        vkDestroyBuffer(vulkiDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(vulkiDevice.device(), stagingBufferMemory, nullptr);
+        vulkiDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+
     }
 
     void VulkiModel::createIndexBuffers(const std::vector<uint32_t>& indices) {
         indexCount = static_cast<uint32_t>(indices.size());
         hasIndexBuffer = indexCount > 0;
 
-        if (!hasIndexBuffer)
+        if (!hasIndexBuffer) {
             return;
+        }
 
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        uint32_t indexSize = sizeof(indices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        // Its a helper in Device class
-        vulkiDevice.createBuffer(
-            bufferSize,
+        VulkiBuffer stagingBuffer{
+            vulkiDevice,
+            indexSize,
+            indexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory);
+        };
 
-        void* data;
-        // Creates a region of host mem mapped to device mem, data points to the gpu mem
-        vkMapMemory(vulkiDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        // Takes the vertices data and copis it into the host mapped mem, it updates the device automatically
-        // because of "COHERENT_BIT" otherwise we should have used Flush()
-        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(vulkiDevice.device(), stagingBufferMemory);
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer((void*)indices.data());
 
-
-        vulkiDevice.createBuffer(
-            bufferSize,
+        indexBuffer = std::make_unique<VulkiBuffer>(
+            vulkiDevice,
+            indexSize,
+            indexCount,
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            indexBuffer,
-            indexBufferMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        vulkiDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-        vkDestroyBuffer(vulkiDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(vulkiDevice.device(), stagingBufferMemory, nullptr);
+            vulkiDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
 
     void VulkiModel::draw(VkCommandBuffer commandBuffer) {
@@ -139,12 +114,12 @@ namespace VULKI {
     }
 
     void VulkiModel::bind(VkCommandBuffer commandBuffer) {
-        VkBuffer buffers[] = { vertexBuffer };
+        VkBuffer buffers[] = { vertexBuffer->getBuffer()};
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
         if (hasIndexBuffer) {
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         }
     }
 

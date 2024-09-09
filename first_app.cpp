@@ -1,7 +1,7 @@
 #include "first_app.h"
 #include "simple_render_system.hpp"
 #include "input_manager.hpp"
-
+#include "vulki_buffer.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -11,11 +11,28 @@
 #include <stdexcept>
 #include <array>
 #include<chrono>
+#include<numeric>
 
 namespace VULKI {
 
+	struct GlobalUbo {
+		glm::mat4 projectionView{ 1.f };
+		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f,-3.f,-1.f });
+	};
 
 	void FirstApp::run() {
+
+		std::vector<std::unique_ptr<VulkiBuffer>> uboBuffers(VulkiSwapChain::MAX_FRAMES_IN_FLIGHT);
+		for (int i = 0; i < uboBuffers.size(); i++) {
+			uboBuffers[i] = std::make_unique<VulkiBuffer>(
+				vulkiDevice,
+				sizeof(GlobalUbo),
+				1,
+				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			uboBuffers[i]->map();
+		}
+
 		SimpleRenderSystem simpleRenderSystem{ vulkiDevice, vulkiRenderer.getSwapChainRenderPass() };
         VulkiCamera camera{};
         camera.setViewTarget(glm::vec3(0.f,0.f,2.f), glm::vec3(0.0f));
@@ -41,8 +58,22 @@ namespace VULKI {
 
 			if (auto commandBuffer = vulkiRenderer.beginFrame()) {
 
+				int frameIndex = vulkiRenderer.getFrameIndex();
+				FrameInfo frameInfo{
+					frameIndex,
+					frameTime,
+					commandBuffer,
+					camera
+				};
+				// update
+				GlobalUbo ubo{};
+				ubo.projectionView = camera.getProjection() * camera.getView();
+				uboBuffers[frameIndex]->writeToBuffer(&ubo);
+				uboBuffers[frameIndex]->flush();
+
+				// render
 				vulkiRenderer.beginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+				simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
 				vulkiRenderer.endSwapChainRenderPass(commandBuffer);
 
 				vulkiRenderer.endFrame();

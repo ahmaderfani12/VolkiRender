@@ -139,6 +139,7 @@
     <ClCompile Include="input_manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SimpleRenderSystem.cpp" />
+    <ClCompile Include="vulki_buffer.cpp" />
     <ClCompile Include="vulki_camera.cpp" />
     <ClCompile Include="vulki_device.cpp" />
     <ClCompile Include="vulki_game_object.cpp" />
@@ -152,8 +153,10 @@
     <ClInclude Include="first_app.h" />
     <ClInclude Include="input_manager.hpp" />
     <ClInclude Include="simple_render_system.hpp" />
+    <ClInclude Include="vulki_buffer.hpp" />
     <ClInclude Include="vulki_camera.hpp" />
     <ClInclude Include="vulki_device.hpp" />
+    <ClInclude Include="vulki_frame_info.hpp" />
     <ClInclude Include="vulki_game_object.hpp" />
     <ClInclude Include="vulki_model.h" />
     <ClInclude Include="vulki_pipeline.h" />
