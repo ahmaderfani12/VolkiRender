@@ -62,7 +62,7 @@ namespace VULKI {
 
 	void FirstApp::loadGameObjects() {
 
-		std::shared_ptr<VulkiModel> vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "D:\\Projects\\VulkiRender\\models\\smooth_vase.obj");
+		std::shared_ptr<VulkiModel> vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/smooth_vase.obj");
         auto go1 = VulkiGameObject::createGameObject();
 		go1.model = vulkiModel;
 		go1.transform.translation = { .0f,.0f,0.f };
@@ -70,7 +70,7 @@ namespace VULKI {
 
 		gameObjects.push_back(std::move(go1));
 
-		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "D:\\Projects\\VulkiRender\\models\\flat_vase.obj");
+		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/flat_vase.obj");
 		auto go2 = VulkiGameObject::createGameObject();
 		go2.model = vulkiModel;
 		go2.transform.translation = { .2f,.0f,0.f };
