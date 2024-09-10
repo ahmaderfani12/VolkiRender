@@ -17,8 +17,17 @@ namespace VULKI {
 
 	struct GlobalUbo {
 		glm::mat4 projectionView{ 1.f };
-		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f,-3.f,-1.f });
+		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f, -3.f, -1.f });
 	};
+
+	FirstApp::FirstApp() {
+		globalPool =
+			VulkiDescriptorPool::Builder(vulkiDevice)
+			.setMaxSets(VulkiSwapChain::MAX_FRAMES_IN_FLIGHT)
+			.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VulkiSwapChain::MAX_FRAMES_IN_FLIGHT)
+			.build();
+		loadGameObjects();
+	}
 
 	void FirstApp::run() {
 
@@ -33,11 +42,29 @@ namespace VULKI {
 			uboBuffers[i]->map();
 		}
 
-		SimpleRenderSystem simpleRenderSystem{ vulkiDevice, vulkiRenderer.getSwapChainRenderPass() };
+		auto globalSetLayout = VulkiDescriptorSetLayout::Builder(vulkiDevice)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.build();
+		
+		std::vector<VkDescriptorSet> globalDescriptorSets(VulkiSwapChain::MAX_FRAMES_IN_FLIGHT);
+		for (int i = 0; i < globalDescriptorSets.size(); i++) {
+			auto bufferInfo = uboBuffers[i]->descriptorInfo();
+			VulkiDescriptorWriter(*globalSetLayout, *globalPool)
+				.writeBuffer(0, &bufferInfo)
+				.build(globalDescriptorSets[i]);
+		}
+
+
+		SimpleRenderSystem simpleRenderSystem{
+			vulkiDevice,
+			vulkiRenderer.getSwapChainRenderPass(),
+			globalSetLayout->getDescriptorSetLayout() };
+
         VulkiCamera camera{};
         camera.setViewTarget(glm::vec3(0.f,0.f,2.f), glm::vec3(0.0f));
 
         auto viewObject = VulkiGameObject::createGameObject();
+		viewObject.transform.translation.z = -1.0f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -63,7 +90,8 @@ namespace VULKI {
 					frameIndex,
 					frameTime,
 					commandBuffer,
-					camera
+					camera,
+					globalDescriptorSets[frameIndex]
 				};
 				// update
 				GlobalUbo ubo{};
@@ -83,9 +111,6 @@ namespace VULKI {
 		vkDeviceWaitIdle(vulkiDevice.device());
 	}
 
-	FirstApp::FirstApp() {
-		loadGameObjects();
-	}
 
 	FirstApp::~FirstApp() {}
 
@@ -96,16 +121,16 @@ namespace VULKI {
 		std::shared_ptr<VulkiModel> vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/smooth_vase.obj");
         auto go1 = VulkiGameObject::createGameObject();
 		go1.model = vulkiModel;
-		go1.transform.translation = { .0f,.0f,0.f };
-		go1.transform.scale = { .5f,.5f,.5f };
+		go1.transform.translation = { -0.5f, 0.5f ,0.0f };
+		go1.transform.scale = { 3,3,3 };
 
 		gameObjects.push_back(std::move(go1));
 
 		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/flat_vase.obj");
 		auto go2 = VulkiGameObject::createGameObject();
 		go2.model = vulkiModel;
-		go2.transform.translation = { .2f,.0f,0.f };
-		go2.transform.scale = { .5f,.5f,.5f };
+		go2.transform.translation = { 0.5f, 0.5f ,0.0f };
+		go2.transform.scale = { 3,3,3 };
 
 		gameObjects.push_back(std::move(go2));
 

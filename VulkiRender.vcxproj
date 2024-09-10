@@ -141,6 +141,7 @@
     <ClCompile Include="SimpleRenderSystem.cpp" />
     <ClCompile Include="vulki_buffer.cpp" />
     <ClCompile Include="vulki_camera.cpp" />
+    <ClCompile Include="vulki_descriptor.cpp" />
     <ClCompile Include="vulki_device.cpp" />
     <ClCompile Include="vulki_game_object.cpp" />
     <ClCompile Include="vulki_model.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="simple_render_system.hpp" />
     <ClInclude Include="vulki_buffer.hpp" />
     <ClInclude Include="vulki_camera.hpp" />
+    <ClInclude Include="vulki_descriptors.hpp" />
     <ClInclude Include="vulki_device.hpp" />
     <ClInclude Include="vulki_frame_info.hpp" />
     <ClInclude Include="vulki_game_object.hpp" />

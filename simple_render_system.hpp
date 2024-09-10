@@ -17,7 +17,7 @@ namespace VULKI {
 	public:
 
 
-		SimpleRenderSystem(VulkiDevice &device, VkRenderPass renderPass);
+		SimpleRenderSystem(VulkiDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
 		~SimpleRenderSystem();
 
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
@@ -27,7 +27,7 @@ namespace VULKI {
 			std::vector<VulkiGameObject> &gameObjects);
 	private:
 
-		void createPipelineLayout();
+		void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 		void createPipeline(VkRenderPass renderPass);
 		
 

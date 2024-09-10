@@ -6,6 +6,7 @@
 #include "vulki_swap_chain.hpp"
 #include "vulki_game_object.hpp"
 #include "vulki_renderer.hpp"
+#include "vulki_descriptors.hpp"
 
 #include<memory>
 #include<vector>
@@ -32,6 +33,8 @@ namespace VULKI {
 		VulkiWindow vulkiWindow{ WIDTH, HEIGHT, "Hello Vulkan!!" };
 		VulkiDevice vulkiDevice{ vulkiWindow };
 		VulkiRenderer vulkiRenderer{ vulkiWindow, vulkiDevice };
+
+		std::unique_ptr<VulkiDescriptorPool> globalPool{};
 		std::vector<VulkiGameObject> gameObjects;
 	};
 }  // namespace lve

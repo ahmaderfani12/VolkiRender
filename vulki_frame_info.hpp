@@ -11,5 +11,6 @@ namespace VULKI {
 		float frameTime;
 		VkCommandBuffer commandBuffer;
 		VulkiCamera& camera;
+		VkDescriptorSet globalDescriptorSet;
 	};
 }  
