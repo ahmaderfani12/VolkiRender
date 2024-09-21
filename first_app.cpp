@@ -17,7 +17,9 @@ namespace VULKI {
 
 	struct GlobalUbo {
 		glm::mat4 projectionView{ 1.f };
-		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f, -3.f, -1.f });
+		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f };  // w is intensity
+		glm::vec3 lightPosition{ -1.f };
+		alignas(16) glm::vec4 lightColor{ 1.f };  // w is light intensity
 	};
 
 	FirstApp::FirstApp() {
@@ -64,7 +66,7 @@ namespace VULKI {
         camera.setViewTarget(glm::vec3(0.f,0.f,2.f), glm::vec3(0.0f));
 
         auto viewObject = VulkiGameObject::createGameObject();
-		viewObject.transform.translation.z = -1.0f;
+		viewObject.transform.translation.z = -2.0f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -133,6 +135,13 @@ namespace VULKI {
 		go2.transform.scale = { 3,3,3 };
 
 		gameObjects.push_back(std::move(go2));
+
+		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/quad.obj");
+		auto floor = VulkiGameObject::createGameObject();
+		floor.model = vulkiModel;
+		floor.transform.translation = { 0.f, .5f, 0.f };
+		floor.transform.scale = { 3.f, 1.f, 3.f };
+		gameObjects.push_back(std::move(floor));
 
 
 	}
