@@ -35,6 +35,6 @@ namespace VULKI {
 		VulkiRenderer vulkiRenderer{ vulkiWindow, vulkiDevice };
 
 		std::unique_ptr<VulkiDescriptorPool> globalPool{};
-		std::vector<VulkiGameObject> gameObjects;
+		VulkiGameObject::Map gameObjects;
 	};
 }  // namespace lve

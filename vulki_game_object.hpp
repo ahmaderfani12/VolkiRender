@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 // std
 #include <memory>
+#include <unordered_map>
 
 namespace VULKI {
 
@@ -24,6 +25,7 @@ namespace VULKI {
     class VulkiGameObject {
     public:
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, VulkiGameObject>;
 
         static VulkiGameObject createGameObject() {
             static id_t currentId = 0;
@@ -46,4 +48,4 @@ namespace VULKI {
 
         id_t id;
     };
-}  // namespace lve
+}  

@@ -70,7 +70,7 @@ namespace VULKI {
 	}
 
 
-	void SimpleRenderSystem:: renderGameObjects(FrameInfo& frameInfo, std::vector<VulkiGameObject>& gameObjects)
+	void SimpleRenderSystem:: renderGameObjects(FrameInfo& frameInfo)
 	{
 		vulkiPipeline->bind(frameInfo.commandBuffer);
 
@@ -84,10 +84,16 @@ namespace VULKI {
 			0,
 			nullptr);
 
-		for (auto& obj : gameObjects) {
+		for (auto& kv : frameInfo.gameObjects) {
+
+			auto& obj = kv.second;
+
+			// Bad way of saying this Render system is only for objects that have model
+			if (obj.model == nullptr) continue;
 
 			SimplePushConstantData push{};
 			push.modelMatrix = obj.transform.mat4();
+
 			//push.normalMatrix = modelMatrix;
 			push.normalMatrix = obj.transform.normalMatrix(); // More accurate
 

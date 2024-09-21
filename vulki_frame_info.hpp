@@ -12,5 +12,6 @@ namespace VULKI {
 		VkCommandBuffer commandBuffer;
 		VulkiCamera& camera;
 		VkDescriptorSet globalDescriptorSet;
+		VulkiGameObject::Map& gameObjects;
 	};
 }  

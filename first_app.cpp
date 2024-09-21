@@ -45,7 +45,7 @@ namespace VULKI {
 		}
 
 		auto globalSetLayout = VulkiDescriptorSetLayout::Builder(vulkiDevice)
-			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 			.build();
 		
 		std::vector<VkDescriptorSet> globalDescriptorSets(VulkiSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -93,8 +93,8 @@ namespace VULKI {
 					frameTime,
 					commandBuffer,
 					camera,
-					globalDescriptorSets[frameIndex]
-				};
+					globalDescriptorSets[frameIndex],
+					gameObjects };
 				// update
 				GlobalUbo ubo{};
 				ubo.projectionView = camera.getProjection() * camera.getView();
@@ -103,7 +103,7 @@ namespace VULKI {
 
 				// render
 				vulkiRenderer.beginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+				simpleRenderSystem.renderGameObjects(frameInfo);
 				vulkiRenderer.endSwapChainRenderPass(commandBuffer);
 
 				vulkiRenderer.endFrame();
@@ -126,7 +126,7 @@ namespace VULKI {
 		go1.transform.translation = { -0.5f, 0.5f ,0.0f };
 		go1.transform.scale = { 3,3,3 };
 
-		gameObjects.push_back(std::move(go1));
+		gameObjects.emplace(go1.getId(), std::move(go1));
 
 		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/flat_vase.obj");
 		auto go2 = VulkiGameObject::createGameObject();
@@ -134,14 +134,14 @@ namespace VULKI {
 		go2.transform.translation = { 0.5f, 0.5f ,0.0f };
 		go2.transform.scale = { 3,3,3 };
 
-		gameObjects.push_back(std::move(go2));
+		gameObjects.emplace(go2.getId(), std::move(go2));
 
 		vulkiModel = VulkiModel::createModelFromFile(vulkiDevice, "models/quad.obj");
 		auto floor = VulkiGameObject::createGameObject();
 		floor.model = vulkiModel;
 		floor.transform.translation = { 0.f, .5f, 0.f };
 		floor.transform.scale = { 3.f, 1.f, 3.f };
-		gameObjects.push_back(std::move(floor));
+		gameObjects.emplace(floor.getId(), std::move(floor));
 
 
 	}
