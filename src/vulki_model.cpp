@@ -11,6 +11,11 @@
 #include <cstring>
 #include <unordered_map>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
+
 namespace std {
     template<>
     // Hash function for unordered_map
@@ -35,7 +40,7 @@ namespace VULKI {
     std::unique_ptr<VulkiModel> VulkiModel::createModelFromFile(VulkiDevice& device, const std::string& filePath) {
     
         Builder builder{};
-        builder.loadModel(filePath);
+        builder.loadModel(ENGINE_DIR + filePath);
 
         return std::make_unique<VulkiModel>(device, builder);
     }
